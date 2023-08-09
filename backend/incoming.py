@@ -39,7 +39,7 @@ def post():
                 <p>Varauspyyntöäsi ei voitu vahvistaa. On mahdollista että valitsemasi päivä on jo varattu - tarkistathan tämän varauskalenterista</p>
                 <p>We were unable to confirm your reservation. It is possible that the date you selected has already been reserved. Please check this from the reservation calendar</p>
             """)
-        send_notification(reservation)
+        send_notification(reservation, config)
     except InvalidReservationException as e:
         return html_response(f"""
             <p>Varauspyyntösi hylättiin / Your reservation request was rejected due to: <br>

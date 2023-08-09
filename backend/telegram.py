@@ -1,8 +1,6 @@
 import textwrap
 
 import requests
-
-from incoming import config
 from reservation_request import ReservationRequest
 
 
@@ -14,7 +12,7 @@ def format_notification(reservation: ReservationRequest) -> str:
     """) + reservation.message
 
 
-def send_notification(reservation: ReservationRequest):
+def send_notification(reservation: ReservationRequest, config: Config):
     response = requests.post(
         f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
         json={
