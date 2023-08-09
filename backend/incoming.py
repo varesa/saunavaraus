@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 from flask import Flask, request
-import requests
-import textwrap
 
+from telegram import send_notification
 from config import Config
 from gcalendar import Calendar
 from reservation_request import ReservationRequest, InvalidReservationException
@@ -13,40 +12,16 @@ config = Config.load()
 calendar = Calendar.login(config)
 
 
-def format_notification(reservation: ReservationRequest) -> str:
-    return textwrap.dedent(f"""
-    Date: {reservation.date.isoformat()}
-    Guests: {reservation.num_guests}
-    ----
-    """) + reservation.message
-
-
-def send_notification(reservation: ReservationRequest):
-    response = requests.post(
-        f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
-        json={
-            "chat_id": config.chat_id,
-            "text": format_notification(reservation),
-            "reply_markup": {
-                "inline_keyboard": [
-                    [
-                        {
-                            "text": "✅Accept",
-                            "callback_data": "accept"
-                        }
-                    ],
-                    [
-                        {
-                            "text": "❌Decline",
-                            "callback_data": "decline"
-                        },
-                    ]
-                ]
-            }
-        })
-
-    if response.status_code != 200:
-        raise Exception(response.text)
+def html_response(content: str) -> str:
+    return f"""
+    <html>
+        <body>
+            {content}
+            <br>
+            <a href="/">Palaa lomakkeeseen / Return to the form</a>
+        <body>
+    </html>
+    """
 
 
 @app.route("/")
@@ -58,33 +33,29 @@ def hello_world():
 def post():
     try:
         reservation = ReservationRequest.from_formdata(request.form)
+        success = calendar.try_add(reservation.date, reservation.header, reservation.details_as_text)
+        if not success:
+            return html_response(f"""
+                <p>Varauspyyntöäsi ei voitu vahvistaa. On mahdollista että valitsemasi päivä on jo varattu - tarkistathan tämän varauskalenterista</p>
+                <p>We were unable to confirm your reservation. It is possible that the date you selected has already been reserved. Please check this from the reservation calendar</p>
+            """)
+        send_notification(reservation)
     except InvalidReservationException as e:
-        return f"""
-        <html>
-            <body>
-                <p>Varauspyyntösi hylättiin / Your reservation request was rejected due to: <br>
-                {e.args[0]}
-                <br>
-                <a href="/">Palaa lomakkeeseen / Return to the form</a>
-            <body>
-        </html>
-        """
+        return html_response(f"""
+            <p>Varauspyyntösi hylättiin / Your reservation request was rejected due to: <br>
+            {e.args[0]}
+        """)
     except Exception as e:
         print(e)
-        return f"""
-        <html>
-            <body>
+        return html_response(f"""
                 <p>Something went wrong. If this repeats, please contact the 
                 tenant committee at astmk@pirkat.net or ask in the Telegram group
-                <br>
-                <a href="/">Palaa lomakkeeseen / Return to the form</a>
-            <body>
-        </html>
-        """
+        """)
 
-
-    send_notification(reservation)
-    return "OK"
+    return html_response("""
+        <p>Varauspyyntösi on otettu vastaan ja se on asukastoimikunnalla vahvistettavana.</p>
+        <p>Your reservation has been received and it is waiting for confirmation from the tenant commitee.</p>
+    """)
 
 
 if __name__ == "__main__":

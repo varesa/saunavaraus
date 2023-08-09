@@ -1,4 +1,5 @@
 from datetime import date
+import textwrap
 
 
 class InvalidReservationException(Exception):
@@ -33,3 +34,17 @@ class ReservationRequest:
         if not (rr.name and rr.address and rr.phone and rr.email):
             raise InvalidReservationException("Missing contact details")
         return rr
+
+    @property
+    def header(self):
+        return f"VAHVISTAMATON {self.name} / {self.header}"
+
+    @property
+    def details_as_text(self):
+        return textwrap.dedent(f"""\
+        Number of guests: {self.num_guests}
+        
+        Email: {self.email}
+        Phone: {self.phone}
+        ----
+        """) + self.message
