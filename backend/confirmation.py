@@ -18,7 +18,7 @@ def send_email(recipient: str, config: Config):
         
         Moi, onnistuu...
     """)
-    server = smtplib.SMTP('localhost', 2500)
+    server = smtplib.SMTP('localhost', 25)
     server.ehlo('localhost')
 
     server.sendmail(config.email_address, recipient, message)
