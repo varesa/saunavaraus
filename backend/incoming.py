@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 from flask import Flask, request
-
 from telegram import send_notification
 from config import Config
 from gcalendar import Calendar
 from reservation_request import ReservationRequest, InvalidReservationException
 from state import State
+import traceback
 
 app = Flask(__name__)
 config = Config.load()
@@ -47,8 +47,8 @@ def post():
             <p>Varauspyyntösi hylättiin / Your reservation request was rejected due to: <br>
             {e.args[0]}
         """)
-    except Exception as e:
-        print(e)
+    except Exception:
+        traceback.print_exc()
         return html_response(f"""
                 <p>Something went wrong. If this repeats, please contact the 
                 tenant committee at astmk@pirkat.net or ask in the Telegram group
