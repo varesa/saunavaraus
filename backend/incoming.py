@@ -25,7 +25,7 @@ def send_notification(reservation: ReservationRequest):
     response = requests.post(
         f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
         json={
-            "chat_id": config['chat_id'],
+            "chat_id": config.chat_id,
             "text": format_notification(reservation),
             "reply_markup": {
                 "inline_keyboard": [
