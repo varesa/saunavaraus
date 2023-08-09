@@ -37,7 +37,7 @@ class ReservationRequest:
 
     @property
     def header(self):
-        return f"VAHVISTAMATON {self.name} / {self.header}"
+        return f"VAHVISTAMATON {self.name} / {self.address}"
 
     @property
     def details_as_text(self):
