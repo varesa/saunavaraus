@@ -21,10 +21,11 @@ class State:
 
     @staticmethod
     def from_str(input: str) -> "State":
-        match = re.match("%%(.*)%%", input)
-        if match:
-            data = match.group(1)
-            decoded = json.loads(base64.b64decode(data).decode())
+        for line in input.splitlines():
+            match = re.match(".*%%(.*)%%.*", line)
+            if match:
+                data = match.group(1)
+                decoded = json.loads(base64.b64decode(data).decode())
 
-            return State(email=decoded['email'])
+                return State(email=decoded['email'])
         raise StateMissingException

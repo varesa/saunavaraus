@@ -97,7 +97,7 @@ class Calendar:
 
     def delete(self, event: Event):
         print(f"Deleting {event}")
-        #self.service.events().delete(calendarId=self.id, eventId=event.id).execute()
+        self.service.events().delete(calendarId=self.id, eventId=event.id).execute()
 
     def confirm(self, event: Event):
         print(f"Confirming {event}")
