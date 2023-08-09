@@ -6,6 +6,7 @@ from telegram import send_notification
 from config import Config
 from gcalendar import Calendar
 from reservation_request import ReservationRequest, InvalidReservationException
+from state import State
 
 app = Flask(__name__)
 config = Config.load()
@@ -33,7 +34,8 @@ def hello_world():
 def post():
     try:
         reservation = ReservationRequest.from_formdata(request.form)
-        event_id = calendar.try_add(reservation.date, reservation.header, reservation.details_as_text)
+        state = State(email=reservation.email)
+        event_id = calendar.try_add(reservation.date, reservation.header, reservation.details_as_text, state)
         if not event_id:
             return html_response(f"""
                 <p>Varauspyyntöäsi ei voitu vahvistaa. On mahdollista että valitsemasi päivä on jo varattu - tarkistathan tämän varauskalenterista</p>
