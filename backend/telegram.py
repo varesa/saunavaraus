@@ -2,6 +2,7 @@ import textwrap
 
 import requests
 from reservation_request import ReservationRequest
+from config import Config
 
 
 def format_notification(reservation: ReservationRequest) -> str:
