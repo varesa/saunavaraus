@@ -20,7 +20,7 @@ class ReservationRequest:
         rr.date = date.fromisoformat(data['date'])
         if rr.date < date.today():
             raise InvalidReservationException("Requested date is in the past")
-        rr.num_guests = data['numGuests']
+        rr.num_guests = int(data['numGuests'])
         if not (0 < rr.num_guests < 100):
             raise InvalidReservationException("Invalid number of guests")
         rr.message = data['message']
