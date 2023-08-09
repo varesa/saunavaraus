@@ -4,10 +4,13 @@ from flask import Flask, request
 import requests
 import textwrap
 
-from backend.config import Config
+from config import Config
+from gcalendar import Calendar
 
 app = Flask(__name__)
 config = Config.load()
+calendar = Calendar.login(config)
+print(list(calendar.get_events()))
 
 
 def format_notification(data):

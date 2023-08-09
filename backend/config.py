@@ -8,7 +8,8 @@ class Config:
     # Telegram bot token and chat id
     bot_token: str = ""
     chat_id: str = ""
-    google_account: dict = ""
+    google_account: dict = {}
+    calendar_id: str = ""
 
     @staticmethod
     def find_file() -> str:
