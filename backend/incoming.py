@@ -33,13 +33,13 @@ def hello_world():
 def post():
     try:
         reservation = ReservationRequest.from_formdata(request.form)
-        success = calendar.try_add(reservation.date, reservation.header, reservation.details_as_text)
-        if not success:
+        event_id = calendar.try_add(reservation.date, reservation.header, reservation.details_as_text)
+        if not event_id:
             return html_response(f"""
                 <p>Varauspyyntöäsi ei voitu vahvistaa. On mahdollista että valitsemasi päivä on jo varattu - tarkistathan tämän varauskalenterista</p>
                 <p>We were unable to confirm your reservation. It is possible that the date you selected has already been reserved. Please check this from the reservation calendar</p>
             """)
-        send_notification(reservation, config)
+        send_notification(reservation, event_id, config)
     except InvalidReservationException as e:
         return html_response(f"""
             <p>Varauspyyntösi hylättiin / Your reservation request was rejected due to: <br>

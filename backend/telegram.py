@@ -1,5 +1,5 @@
+import json
 import textwrap
-
 import requests
 from reservation_request import ReservationRequest
 from config import Config
@@ -13,7 +13,7 @@ def format_notification(reservation: ReservationRequest) -> str:
     """) + reservation.message
 
 
-def send_notification(reservation: ReservationRequest, config: Config):
+def send_notification(reservation: ReservationRequest, event_id: str, config: Config):
     response = requests.post(
         f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
         json={
@@ -24,13 +24,19 @@ def send_notification(reservation: ReservationRequest, config: Config):
                     [
                         {
                             "text": "✅Accept",
-                            "callback_data": "accept"
+                            "callback_data": json.dumps({
+                                "action": "accept",
+                                "id": event_id,
+                            })
                         }
                     ],
                     [
                         {
                             "text": "❌Decline",
-                            "callback_data": "decline"
+                            "callback_data": json.dumps({
+                                "action": "decline",
+                                "id": event_id,
+                            })
                         },
                     ]
                 ]

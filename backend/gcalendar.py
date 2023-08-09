@@ -2,23 +2,42 @@ from datetime import date, timedelta
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 from config import Config
-from typing import Iterator
+from typing import Iterator, Optional
+from state import State
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
 
+class EventNotFoundException(Exception):
+    pass
+
+
 class Event:
+    id: str = ""
     date: date = None
 
+    summary: str = ""
+    description: str = ""
+
     def __repr__(self):
-        return f"<Event on {self.date}>"
+        return f"<Event {self.id} on {self.date}>"
 
     @staticmethod
     def from_api_result(data: dict) -> "Event":
         event = Event()
 
+        event.id = data['id']
         event.date = date.fromisoformat(data['start']['date'])
+        event.summary = data['summary']
+        event.description = data['description']
+
         return event
+
+    def get_sate(self):
+        """
+        Attempt to get the state from the event message. Bubbles up StateMissingException on failure.
+        """
+        return State.from_str(self.description)
 
 
 class Calendar:
@@ -38,7 +57,7 @@ class Calendar:
     def get_events(self) -> Iterator[Event]:
         now = date.today().isoformat() + 'T00:00:00Z'
         result = self.service.events().list(calendarId=self.id, timeMin=now, maxResults=365, singleEvents=True,
-                                   orderBy='startTime').execute()
+                                            orderBy='startTime').execute()
         for event in result['items']:
             yield Event.from_api_result(event)
 
@@ -49,13 +68,13 @@ class Calendar:
                 return False
         return True
 
-    def try_add(self, event_date: date, header: str, details: str) -> bool:
+    def try_add(self, event_date: date, header: str, details: str, state: State) -> Optional[str]:
         if not self.is_free(event_date):
-            return False
+            return None
 
         event = {
             'summary': header,
-            'description': details,
+            'description': details + '\n\n' + state.encode(),
             'start': {
                 'date': event_date.isoformat()
             },
@@ -63,8 +82,14 @@ class Calendar:
                 'date': (event_date + timedelta(days=1)).isoformat()
             }
         }
-        print(event)
 
         result = self.service.events().insert(calendarId=self.id, body=event).execute()
         assert result['status'] == 'confirmed'
-        return True
+        return result['id']
+
+    def get_by_id(self, event_id: str) -> Event:
+        events = self.get_events()
+        for event in events:
+            if event.id == event_id:
+                return event
+        raise EventNotFoundException(event_id)
