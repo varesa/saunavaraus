@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from datetime import datetime
 
 from flask import Flask, request
 import requests
@@ -11,11 +10,6 @@ from gcalendar import Calendar
 app = Flask(__name__)
 config = Config.load()
 calendar = Calendar.login(config)
-
-print("Test #1: ", calendar.try_add(datetime(2023, 8, 10), "Hello", "World"))
-print("Test #2: ", calendar.try_add(datetime(2023, 8, 10), "Hello", "World"))
-
-print(list(calendar.get_events()))
 
 
 def format_notification(data):

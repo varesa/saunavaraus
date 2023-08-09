@@ -1,15 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 from config import Config
 from typing import Iterator
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
-DATE_FORMAT = '%Y-%m-%d'
 
 
 class Event:
-    date: datetime = None
+    date: date = None
 
     def __repr__(self):
         return f"<Event on {self.date}>"
@@ -17,7 +16,8 @@ class Event:
     @staticmethod
     def from_api_result(data: dict) -> "Event":
         event = Event()
-        event.date = datetime.strptime(data['start']['date'], DATE_FORMAT)
+
+        event.date = date.fromisoformat(data['start']['date'])
         return event
 
 
@@ -36,33 +36,34 @@ class Calendar:
         return calendar
 
     def get_events(self) -> Iterator[Event]:
-        now = datetime.utcnow().isoformat() + 'Z'
+        now = date.today().isoformat() + 'T00:00:00Z'
         result = self.service.events().list(calendarId=self.id, timeMin=now, maxResults=365, singleEvents=True,
                                    orderBy='startTime').execute()
         for event in result['items']:
             yield Event.from_api_result(event)
 
-    def is_free(self, date: datetime) -> bool:
+    def is_free(self, date: date) -> bool:
         events = self.get_events()
         for event in events:
             if event.date == date:
                 return False
         return True
 
-    def try_add(self, date: datetime, header: str, details: str) -> bool:
-        if not self.is_free(date):
+    def try_add(self, event_date: date, header: str, details: str) -> bool:
+        if not self.is_free(event_date):
             return False
 
         event = {
             'summary': header,
             'description': details,
             'start': {
-                'date': date.strftime(DATE_FORMAT)
+                'date': event_date.isoformat()
             },
             'end': {
-                'date': (date + timedelta(days=1)).strftime(DATE_FORMAT)
+                'date': (event_date + timedelta(days=1)).isoformat()
             }
         }
+        print(event)
 
         result = self.service.events().insert(calendarId=self.id, body=event).execute()
         assert result['status'] == 'confirmed'
