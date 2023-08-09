@@ -2,8 +2,8 @@ import textwrap
 
 import requests
 
-from backend.incoming import config
-from backend.reservation_request import ReservationRequest
+from incoming import config
+from reservation_request import ReservationRequest
 
 
 def format_notification(reservation: ReservationRequest) -> str:
