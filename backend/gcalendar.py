@@ -28,8 +28,8 @@ class Event:
 
         event.id = data['id']
         event.date = date.fromisoformat(data['start']['date'])
-        event.summary = data['summary']
-        event.description = data['description']
+        event.summary = data.get('summary', None)
+        event.description = data.get('description', None)
 
         return event
 
