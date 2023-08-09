@@ -14,10 +14,10 @@ class State:
         self.email = email
 
     def encode(self):
-        encoded = base64.b64encode(json.dumps({
+        b64encoded = base64.b64encode(json.dumps({
             "email": self.email
         }).encode())
-        return "<<" + encoded + ">>"
+        return "<<" + b64encoded.decode() + ">>"
 
     @staticmethod
     def from_str(input: str) -> "State":
