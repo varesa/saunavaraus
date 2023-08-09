@@ -21,7 +21,7 @@ class Config:
         Checks that a file exists at the given path and aborts the program otherwise.
         """
         if len(sys.argv) == 2:
-            config_path = sys.argv[2]
+            config_path = sys.argv[1]
         else:
             config_path = './config.json'
 
