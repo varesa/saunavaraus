@@ -6,26 +6,27 @@ import textwrap
 
 from config import Config
 from gcalendar import Calendar
+from reservation_request import ReservationRequest, InvalidReservationException
 
 app = Flask(__name__)
 config = Config.load()
 calendar = Calendar.login(config)
 
 
-def format_notification(data):
+def format_notification(reservation: ReservationRequest) -> str:
     return textwrap.dedent(f"""
-    Date: {data['date']}
-    Guests: {data['numGuests']}
+    Date: {reservation.date.isoformat()}
+    Guests: {reservation.num_guests}
     ----
-    """) + data['message']
+    """) + reservation.message
 
 
-def send_notification(data):
+def send_notification(reservation: ReservationRequest):
     response = requests.post(
         f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
         json={
             "chat_id": config['chat_id'],
-            "text": format_notification(data),
+            "text": format_notification(reservation),
             "reply_markup": {
                 "inline_keyboard": [
                     [
@@ -55,7 +56,34 @@ def hello_world():
 
 @app.route("/post", methods=['POST'])
 def post():
-    send_notification(request.form)
+    try:
+        reservation = ReservationRequest.from_formdata(request.form)
+    except InvalidReservationException as e:
+        return f"""
+        <html>
+            <body>
+                <p>Varauspyyntösi hylättiin / Your reservation request was rejected due to: <br>
+                {e.args[0]}
+                <br>
+                <a href="/">Palaa lomakkeeseen / Return to the form</a>
+            <body>
+        </html>
+        """
+    except Exception as e:
+        print(e)
+        return f"""
+        <html>
+            <body>
+                <p>Something went wrong. If this repeats, please contact the 
+                tenant committee at astmk@pirkat.net or ask in the Telegram group
+                <br>
+                <a href="/">Palaa lomakkeeseen / Return to the form</a>
+            <body>
+        </html>
+        """
+
+
+    send_notification(reservation)
     return "OK"
 
 
