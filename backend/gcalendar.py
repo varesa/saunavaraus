@@ -27,7 +27,11 @@ class Event:
         event = Event()
 
         event.id = data['id']
-        event.date = date.fromisoformat(data['start']['date'])
+        if 'date' in data['start'].keys():
+            event.date = date.fromisoformat(data['start']['date'])
+        else:
+            event_date, _ = data['start']['dateTime'].split('T')
+            event.date = date.fromisoformat(event_date)
         event.summary = data.get('summary', None)
         event.description = data.get('description', None)
 
