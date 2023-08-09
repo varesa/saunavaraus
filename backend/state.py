@@ -17,11 +17,11 @@ class State:
         b64encoded = base64.b64encode(json.dumps({
             "email": self.email
         }).encode())
-        return "<<" + b64encoded.decode() + ">>"
+        return "%%" + b64encoded.decode() + "%%"
 
     @staticmethod
     def from_str(input: str) -> "State":
-        match = re.match("<<(.*)>>", input)
+        match = re.match("%%(.*)%%", input)
         if match:
             data = match.group(1)
             decoded = json.loads(base64.b64decode(data).decode())

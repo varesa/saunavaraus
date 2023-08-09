@@ -10,6 +10,7 @@ class Config:
     chat_id: str = ""
     google_account: dict = {}
     calendar_id: str = ""
+    email_address: str = ""
 
     @staticmethod
     def find_file() -> str:

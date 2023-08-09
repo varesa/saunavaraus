@@ -92,8 +92,18 @@ class Calendar:
         return result['id']
 
     def get_by_id(self, event_id: str) -> Event:
-        events = self.get_events()
-        for event in events:
-            if event.id == event_id:
-                return event
-        raise EventNotFoundException(event_id)
+        result = self.service.events().get(calendarId=self.id, eventId=event_id).execute()
+        return Event.from_api_result(result)
+
+    def delete(self, event: Event):
+        print(f"Deleting {event}")
+        #self.service.events().delete(calendarId=self.id, eventId=event.id).execute()
+
+    def confirm(self, event: Event):
+        print(f"Confirming {event}")
+        patch = {
+            "summary": event.summary.replace("VAHVISTAMATON ", "")
+        }
+        result = self.service.events().patch(calendarId=self.id, eventId=event.id, body=patch).execute()
+        print(result)
+
