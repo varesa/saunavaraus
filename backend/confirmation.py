@@ -33,11 +33,12 @@ def send_email(recipient: str, event_date: date, config: Config):
 
         https://www.pirkat.net/saunacheck
 
-         Sovithan avaimen lainasta vähintään päivää etukäteen.
-         Avainten haltijoiden puhelinnumerot löydät:
-         - www.kodinportaali.fi -sivulta
-         - Telegram ryhmästä -> ryhmän jäsenet -> nimien vieressä“ASTMK P4 av”
-         - Ilmoitustaululta (kosketusnäyttö rappukäytävällä)
+        Sovithan avaimen lainasta vähintään päivää etukäteen.
+        Avainten haltijoiden puhelinnumerot löydät:
+        - https://www.kodinportaali.fi -sivulta
+        - Telegram ryhmästä (https://pirkat.net/tg)
+          -> ryhmän jäsenet -> nimien vieressä “ASTMK P4 av”
+        - Ilmoitustaululta (kosketusnäyttö rappukäytävällä)
 
 
         Varaus alkaa klo 12 ja päättyy seuraavana päivänä klo 12. Hiljaisuuden
@@ -69,7 +70,66 @@ def send_email(recipient: str, event_date: date, config: Config):
 
         Terv. Pirkat asukastoimikunta (astmk@pirkat.net)
 
-        <TODO: English version>
+        ---------------------
+
+        Hi!
+
+        The rooftop sauna has been reserved for you on {date_formatted}.
+
+        Please remind yourself of the rules and cleaning instructions
+        as you are responsible for the venue during your reservation:
+
+        Rules: https://docs.google.com/document/d/1k9xfenMVP0mkO11tOJLTNr7vKzplAs-qOTaSjYeb__A
+        Cleaning instructions: https://docs.google.com/document/d/10ZCeyDOW6q_6qXfjbAjMIL9u-s61Uor-FBdJIr96ZBA
+
+        At the beginning and end of your reservation please fill the
+        checkin/checkout forms, as that way you won't be held liable
+        for any damage which may have occurred before your reservation:
+
+        https://www.pirkat.net/saunacheck
+
+        Remember to arrange a time to pick up the key from a tenant commitee
+        member *at least a day* in advance. Contact information for
+        members who hold a key can be found at:
+        - https://www.kodinportaali.fi webpage
+        - The telegram group (https://pirkat.net/tg)
+          -> group members -> "ASTMK p4 av" label next to name
+        - The notice board (touch screen at the building entrance)
+
+        Your booking begins at 12.00 (noon) and ends on the following day
+        at 12.00. As silence begins in our buildings, you must leave the
+        rooftop sauna: Fri-Sat at 23.00 pm and  Sun-Thu at 22.00.
+
+        Remember to turn on the sauna yourself! Turn on the sauna stove
+        from the lounge room wall timer (above the door phone, below the
+        AC timer screw) on your left as you enter the lounge. You can set
+        the sauna to heat only once a day so it is best to set enough time
+        on the timer at once. There is also a power adjustment below the
+        stove in the sauna, you can use it to adjust the temperature to
+        your preference. Turning the sauna timer on also unlocks the venue
+        door leading to the hallway. Even if the timer has time remaining,
+        the sauna can only be heated between 15.30-23.00 and at most for
+        6 hours per day.
+
+        Make sure the venue is cleaned properly and according to the cleaning
+        instructions, all electronics and lights have been turned off, and all
+        doors and windows are locked after you leave.
+
+        Return the key to its holder as soon as possible and inform the
+        tenant committee of any damages or deficiencies from what is stated
+        in the cleaning instructions or rules.
+
+        Rooftop sauna door phone: 133
+
+        Wifi: Kattosauna (password: LoylyKauha4)
+
+        All instructions, rules, and further information is available on
+        our website: https://www.pirkat.net
+
+
+        Enjoy your time at the rooftop sauna!
+
+        Regards, the Pirkat tenant committee (astmk@pirkat.net)
     """)
     server = smtplib.SMTP('localhost', 25)
     server.ehlo('localhost')
