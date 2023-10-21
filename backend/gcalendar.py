@@ -37,7 +37,7 @@ class Event:
 
         return event
 
-    def get_sate(self):
+    def get_state(self):
         """
         Attempt to get the state from the event message. Bubbles up StateMissingException on failure.
         """

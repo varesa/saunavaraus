@@ -31,7 +31,7 @@ while True:
         event_id = callback.data['id']
 
         event = calendar.get_by_id(event_id)
-        reservation_email = event.get_sate().email
+        reservation_email = event.get_state().email
 
         # TODO: Notify user
         if event_action == 'decline':
