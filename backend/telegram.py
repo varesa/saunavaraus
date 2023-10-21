@@ -58,6 +58,9 @@ def format_notification(reservation: ReservationRequest) -> str:
     return textwrap.dedent(f"""
     Date: {reservation.date.isoformat()}
     Guests: {reservation.num_guests}
+
+    By: {reservation.name} ({reservation.address)
+    Contact: {reservation.email} / {reservation.phone}
     ----
     """) + reservation.message
 

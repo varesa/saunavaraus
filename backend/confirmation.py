@@ -95,7 +95,7 @@ while True:
             calendar.confirm(event)
             send_email(reservation_email, event.date, config)
             status = f"Hyväksynyt {callback.date_formatted} " + \
-                "{callback.user_name}"
+                f"{callback.user_name}"
         else:
             raise Exception(f"Unknown action {event_action}")
 
