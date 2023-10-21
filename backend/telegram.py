@@ -64,7 +64,7 @@ def format_notification(reservation: ReservationRequest) -> str:
     ----
     """) + reservation.message
 
-}
+
 def send_notification(reservation: ReservationRequest, event_id: str, config: Config):
     response = requests.post(
         f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
