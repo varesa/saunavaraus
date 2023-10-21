@@ -89,8 +89,8 @@ while True:
         if event_action == 'decline':
             calendar.delete(event)
             status = f"Hylännyt {callback.date_formatted} " + \
-                "{callback.user_name}. Ilmoita hylkäämisestä " + \
-                "itse osoitteeseen {reservation_email}"
+                f"{callback.user_name}. Ilmoita hylkäämisestä " + \
+                f"itse osoitteeseen {reservation_email}"
         elif event_action == 'accept':
             calendar.confirm(event)
             send_email(reservation_email, event.date, config)
