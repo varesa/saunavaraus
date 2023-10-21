@@ -74,7 +74,7 @@ def send_email(recipient: str, event_date: date, config: Config):
     server = smtplib.SMTP('localhost', 25)
     server.ehlo('localhost')
 
-    server.sendmail(config.email_address, recipient, message)
+    server.sendmail(config.email_address, recipient, message.encode())
     server.quit()
 
 
