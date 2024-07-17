@@ -146,15 +146,17 @@ while True:
         event = calendar.get_by_id(event_id)
         reservation_email = event.get_state().email
 
+        date_now = date.today().isoformat()
+
         if event_action == 'decline':
             calendar.delete(event)
-            status = f"Hylännyt {callback.date_formatted} " + \
+            status = f"Hylännyt {date_now} " + \
                 f"{callback.user_name}. Ilmoita hylkäämisestä " + \
                 f"itse osoitteeseen {reservation_email}"
         elif event_action == 'accept':
             calendar.confirm(event)
             send_email(reservation_email, event.date, config)
-            status = f"Hyväksynyt {callback.date_formatted} " + \
+            status = f"Hyväksynyt {date_now} " + \
                 f"{callback.user_name}"
         else:
             raise Exception(f"Unknown action {event_action}")
