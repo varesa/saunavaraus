@@ -1,10 +1,22 @@
 import json
 import textwrap
 import requests
+from requests import Session
+from requests.adapters import HTTPAdapter
 import datetime
+from urllib3.util import Retry
+from typing import Optional, Iterable
+
 from reservation_request import ReservationRequest
 from config import Config
-from typing import Optional, Iterable
+
+
+session = Session()
+retries = Retry(
+    total=10,
+    backoff_factor=0.2,
+)
+session.mount('https://', HTTPAdapter(max_retries=retries))
 
 
 class CallbackAction:
@@ -17,11 +29,12 @@ class CallbackAction:
         self.data = json.loads(update['callback_query']['data'])
 
     def answer(self):
-        response = requests.post(
+        response = session.post(
             f"https://api.telegram.org/bot{self.config.bot_token}/answerCallbackQuery",
             json={
                 "callback_query_id": self.raw['callback_query']['id']
-            })
+            },
+            timeout=(2, 10))
 
         if response.status_code != 200:
             raise Exception(response.text)
@@ -31,13 +44,14 @@ class CallbackAction:
         message_id = self.raw['callback_query']['message']['message_id']
         new_text = self.raw['callback_query']['message']['text'] + '\n\n' + text
 
-        response = requests.post(
+        response = session.post(
             f"https://api.telegram.org/bot{self.config.bot_token}/editMessageText",
             json={
                 "chat_id": chat_id,
                 "message_id": message_id,
                 "text": new_text,
-            })
+            },
+            timeout=(2, 10))
 
         if response.status_code != 200:
             raise Exception(response.text)
@@ -66,7 +80,7 @@ def format_notification(reservation: ReservationRequest) -> str:
 
 
 def send_notification(reservation: ReservationRequest, event_id: str, config: Config):
-    response = requests.post(
+    response = session.post(
         f"https://api.telegram.org/bot{config.bot_token}/sendMessage",
         json={
             "chat_id": config.chat_id,
@@ -93,7 +107,8 @@ def send_notification(reservation: ReservationRequest, event_id: str, config: Co
                     ]
                 ]
             }
-        })
+        },
+        timeout=(2, 10))
 
     if response.status_code != 200:
         raise Exception(response.text)
@@ -104,11 +119,15 @@ last_update = None
 
 def get_callbacks(config: Config) -> Iterable[CallbackAction]:
     global last_update
-    params = {"timeout": 10}
+    params = {"timeout": 30}
     if last_update:
         params['offset'] = last_update + 1
-    response = requests.post(
-        f"https://api.telegram.org/bot{config.bot_token}/getUpdates", json=params)
+    print("getting updates")
+    response = session.post(
+        f"https://api.telegram.org/bot{config.bot_token}/getUpdates", 
+        json=params,
+        timeout=(2, 45))
+    print("got updates")
 
     if response.status_code != 200:
         raise Exception(response.text)
