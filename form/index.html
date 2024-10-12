@@ -13,29 +13,53 @@
 <body>
     <section class="contact-clean">
         <form method="post" action="/backend/post">
-            <h2 class="text-center">Kattosaunan varaus</h2>
-            <h3>Tilaisuus</h3>
-            <label>Päivämäärä</label>
+            <h2 class="main-title">Kattosaunan varaus</h2>
+            <button class="btn btn-link" id="language-switch">Go to English form</button>
+            <h3 id="h-event">Tilaisuus</h3>
+            <label id="lbl-date">Päivämäärä</label>
             <div class="mb-3"><input class="form-control" type="date" name="date" placeholder="Päivämäärä" required></div>
-            <label>Kävijöiden määrä</label>
+            <label id="lbl-guests">Kävijöiden määrä</label>
             <div class="mb-3"><input class="form-control" type="number" name="numGuests" placeholder="" required></div>
-            <label>Tapahtuman kuvaus</label>
+            <label id="lbl-description">Tapahtuman kuvaus</label>
             <div class="mb-3"><textarea class="form-control" name="message" placeholder="Message" rows="14" required></textarea></div>
 
-            <h3>Varaajan yhteystiedot</h3>
-            <label>Nimi</label>
+            <h3 id="h-contact">Varaajan yhteystiedot</h3>
+            <label id="lbl-name">Nimi</label>
             <div class="mb-3"><input class="form-control" type="text" name="name" placeholder="Nimi" required></div>
-            <label>Kohde</label>
+            <label id="lbl-address">Kohde</label>
             <div class="mb-3"><input class="form-control" type="text" name="kohde" placeholder="Mielikuvituskatu 10 A 3" required></div>
-            <label>Puhelinnumero</label>
+            <label id="lbl-phone">Puhelinnumero</label>
             <div class="mb-3"><input class="form-control" type="text" name="phone" placeholder="Puhelinnumero" required></div>
-            <label>Sähköposti</label>
+            <label id="lbl-email">Sähköposti</label>
             <div class="mb-3"><input class="form-control" type="email" name="email" placeholder="Email" required></div>
 
             <div class="mb-3"><button class="btn btn-primary" type="submit">send </button></div>
         </form>
     </section>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script type="application/javascript">
+        const link = document.getElementById("language-switch");
+        link.onclick = (event) => {
+            event.preventDefault();
+
+            document.getElementById("language-switch").innerText = "Suomenkieliseen lomakkeeseen";
+            document.getElementById("language-switch").onclick = () => {
+                event.preventDefault();
+                location.reload();
+            };
+
+            document.getElementById("h-event").innerText = "Event";
+            document.getElementById("lbl-date").innerText = "Date";
+            document.getElementById("lbl-guests").innerText = "Number of guests";
+            document.getElementById("lbl-description").innerText = "Event description";
+
+            document.getElementById("h-contact").innerText = "Contact details";
+            document.getElementById("lbl-name").innerText = "Name";
+            document.getElementById("lbl-address").innerText = "Home address";
+            document.getElementById("lbl-phone").innerText = "Phone number";
+            document.getElementById("lbl-email").innerText = "Email address";
+        };
+    </script>
 </body>
 
 </html>
