@@ -6,6 +6,7 @@ import smtplib
 import time
 import textwrap
 import os
+import hashlib
 
 config = Config.load()
 calendar = Calendar.login(config)
@@ -140,7 +141,8 @@ def send_email(recipient: str, event_date: date, config: Config):
 
 
 def _flag_path(flag: str) -> str:
-    return os.path.join('/tmp', 'saunavaraus-' + str(hash(flag)))
+    flag_hash = hashlib.sha1(flag.encode()).hexdigest()
+    return os.path.join('/tmp', 'saunavaraus-' + flag_hash)
 
 
 def is_flag_set(flag) -> bool:
