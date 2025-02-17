@@ -5,6 +5,7 @@ from gcalendar import Calendar
 import smtplib
 import time
 import textwrap
+import os
 
 config = Config.load()
 calendar = Calendar.login(config)
@@ -138,6 +139,25 @@ def send_email(recipient: str, event_date: date, config: Config):
     server.quit()
 
 
+def _flag_path(flag: str) -> str:
+    return os.path.join(['/tmp', 'saunavaraus-' + hash(flag)])
+
+
+def is_flag_set(flag) -> bool:
+    return os.path.exists(_flag_path(flag))
+
+
+def set_flag(flag):
+    with open(_flag_path(flag), 'w') as f:
+        f.write('sent')
+
+
+def clear_flag(flag):
+    path = _flag_path(flag)
+    if os.path.exists(path):
+        os.remove(path)
+
+
 while True:
     for callback in get_callbacks(config):
         event_action = callback.data['action']
@@ -145,6 +165,8 @@ while True:
 
         event = calendar.get_by_id(event_id)
         reservation_email = event.get_state().email
+
+        mail_flag = reservation_email + str(event.date)
 
         date_now = date.today().isoformat()
 
@@ -155,7 +177,12 @@ while True:
                 f"itse osoitteeseen {reservation_email}"
         elif event_action == 'accept':
             calendar.confirm(event)
-            send_email(reservation_email, event.date, config)
+
+            # Save a local flag after sending the email so that even if the TG callback fails or the app
+            # crashes for whatever reason, we won't end up sending confirmation mails in a loop
+            if not is_flag_set(mail_flag):
+                send_email(reservation_email, event.date, config)
+                set_flag(mail_flag)
             status = f"Hyväksynyt {date_now} " + \
                 f"{callback.user_name}"
         else:
@@ -163,4 +190,6 @@ while True:
 
         callback.answer()
         callback.append_text(status)
+
+        clear_flag(mail_flag)
     time.sleep(5)
