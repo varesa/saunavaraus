@@ -140,7 +140,7 @@ def send_email(recipient: str, event_date: date, config: Config):
 
 
 def _flag_path(flag: str) -> str:
-    return os.path.join(['/tmp', 'saunavaraus-' + hash(flag)])
+    return os.path.join(['/tmp', 'saunavaraus-' + str(hash(flag))])
 
 
 def is_flag_set(flag) -> bool:
